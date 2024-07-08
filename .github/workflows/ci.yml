@@ -41,14 +41,12 @@ jobs:
   dependency-check:
     name: Dependency-Check
     runs-on: self-hosted
-    strategy:
-      matrix:
-        java-version: [ 8, 11, 15 ]
+
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-java@v1
         with:
-          java-version: ${{ matrix.java-version }}
+          java-version: 15
       - name: Download OWASP Dependency Check
         run: |
           VERSION=$(curl -s https://jeremylong.github.io/DependencyCheck/current.txt)
@@ -56,7 +54,7 @@ jobs:
           unzip dependency-check.zip
       - name: Run Dependency Check
         run: |
-          ./dependency-check/bin/dependency-check.sh --out report.html --scan . --noupdate
+          ./dependency-check/bin/dependency-check.sh --out report.html --scan .
           rm -rf dependency-check*
       - name: Upload Artifacts
         uses: actions/upload-artifact@v2
