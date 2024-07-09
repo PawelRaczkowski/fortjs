@@ -70,7 +70,7 @@ jobs:
             
       - name: Run Dependency Check
         run: |
-          ./dependency-check/bin/dependency-check.sh --nvdApiKey ${{ secrets.NDV_API_KEY }} --out report.html --scan .
+          ./dependency-check/bin/dependency-check.sh --nvdApiKey ${{secrets.NDV_API_KEY}} --out report.html --scan .
       - name: Get Date
         id: get-date
         run: |
