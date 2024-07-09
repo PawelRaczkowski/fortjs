@@ -70,7 +70,7 @@ jobs:
             
       - name: Run Dependency Check
         run: |
-          ./dependency-check/bin/dependency-check.sh --nvdApiKey "64fadad3-1b3e-4045-8507-10f176e7d057" --out report.html --scan .
+          ./dependency-check/bin/dependency-check.sh --nvdApiKey ${{ secrets.NDV_API_KEY }} --out report.html --scan .
       - name: Get Date
         id: get-date
         run: |
@@ -79,6 +79,7 @@ jobs:
         
       - name: Upload Artifacts
         uses: actions/upload-artifact@v2
+        if: always()
         with:
           name: artifacts
           path: report.html
