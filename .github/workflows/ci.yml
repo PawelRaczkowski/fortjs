@@ -47,16 +47,41 @@ jobs:
       - uses: actions/setup-java@v1
         with:
           java-version: 15
-      - name: Depcheck
-        uses: dependency-check/Dependency-Check_Action@main
-        id: Depcheck
+      - name: Download OWASP Dependency Check
+        run: |
+          VERSION=$(curl -s https://jeremylong.github.io/DependencyCheck/current.txt)
+          curl -sL "https://github.com/jeremylong/DependencyCheck/releases/download/v$VERSION/dependency-check-$VERSION-release.zip" --output dependency-check.zip
+          unzip dependency-check.zip
+          
+      - name: Restore cached Database
+        uses: actions/cache/restore@v3
         with:
-          project: 'test'
-          path: '.'
-          format: 'HTML'
-          out: 'reports' # this is the default, no need to specify unless you wish to override it
+          path: ./data
+          # Using datetime in cache key as OWASP database may change, without the pom changing
+          key: ${{ runner.os }}-npm-${{ steps.get-date.outputs.datetime }}-${{ hashFiles('**/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-${{ steps.get-date.outputs.datetime }}
+            ${{ runner.os }}-maven-
+            
+      - name: Run Dependency Check
+        run: |
+          ./dependency-check/bin/dependency-check.sh --nvdApiKey "64fadad3-1b3e-4045-8507-10f176e7d057" --out report.html --scan .
+          rm -rf dependency-check*
+      - name: Get Date
+        id: get-date
+        run: |
+          echo "datetime=$(/bin/date -u "+%Y%m%d%H")" >> $GITHUB_OUTPUT
+        shell: bash
+        
       - name: Upload Artifacts
         uses: actions/upload-artifact@v2
         with:
           name: artifacts
-          path: report.html   
+          path: report.html
+          
+      - name: Cache Maven dependencies
+        uses: actions/cache/save@v3
+        if: always()
+        with:
+          path: ./data
+          key: ${{ runner.os }}-npm-${{ steps.get-date.outputs.datetime }}-${{ hashFiles('**/package.json') }}
