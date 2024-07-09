@@ -61,17 +61,16 @@ jobs:
       - name: Restore cached Database
         uses: actions/cache/restore@v3
         with:
-          path: ~/data
+          path: ./dependency-check/data
           # Using datetime in cache key as OWASP database may change, without the pom changing
           key: ${{ runner.os }}-npm-${{ steps.get-date.outputs.datetime }}-${{ hashFiles('**/package.json') }}
           restore-keys: |
-            ${{ runner.os }}-maven-${{ steps.get-date.outputs.datetime }}
-            ${{ runner.os }}-maven-
+            ${{ runner.os }}-npm-${{ steps.get-date.outputs.datetime }}
+            ${{ runner.os }}-npm-
             
       - name: Run Dependency Check
         run: |
           ./dependency-check/bin/dependency-check.sh --nvdApiKey "64fadad3-1b3e-4045-8507-10f176e7d057" --out report.html --scan .
-          rm -rf dependency-check*
       - name: Get Date
         id: get-date
         run: |
@@ -88,5 +87,5 @@ jobs:
         uses: actions/cache/save@v3
         if: always()
         with:
-          path: ~/data
+          path: ./dependency-check/data
           key: ${{ runner.os }}-npm-${{ steps.get-date.outputs.datetime }}-${{ hashFiles('**/package.json') }}
