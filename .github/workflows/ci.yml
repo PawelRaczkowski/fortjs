@@ -47,11 +47,6 @@ jobs:
       - uses: actions/setup-java@v1
         with:
           java-version: 15
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18.18.0
-      - name: Install dependencies
-        run:   cd benchmarks && npm install
       - name: Download OWASP Dependency Check
         run: |
           VERSION=$(curl -s https://jeremylong.github.io/DependencyCheck/current.txt)
