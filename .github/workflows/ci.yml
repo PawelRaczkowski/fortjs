@@ -28,7 +28,6 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18.18.0
-
       # Runs a single command using the runners shell
       - name: Install dependencies
         run: npm ci 
@@ -38,6 +37,13 @@ jobs:
       
       - name: Install dependencies in benchmark
         run:  cd benchmarks && npm install
+      - name: Save build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifacts
+          path: |
+            build/
+            benchmarks/build/
   dependency-check:
     name: Dependency-Check
     runs-on: self-hosted
@@ -72,7 +78,7 @@ jobs:
           echo "datetime=$(/bin/date -u "+%Y%m%d%H")" >> $GITHUB_OUTPUT
         shell: bash
         
-      - name: Upload Artifacts
+      - name: Save Dependency Check Report
         uses: actions/upload-artifact@v2
         if: always()
         with:
